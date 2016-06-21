@@ -11,19 +11,22 @@
 
 ### Example
 
-```json
+    ```
     {
         "name": "vendor/project-name",
         "type": "opencart-extension",
         "extra": {
             "src-dir" : "src/upload",
-            "mappings" : {
+            "mappings" : [
                 "catalog/controller/vendor/controller_name.php",
                 "catalog/model/vendor/other_model.php"
-            }       
+            ]       
+        },
+        "require": {
+            "beyondit/opencart-extension-installer": "*"
         }
     }
-```
+    ```
 
 ## Composer Root Project Extras
 

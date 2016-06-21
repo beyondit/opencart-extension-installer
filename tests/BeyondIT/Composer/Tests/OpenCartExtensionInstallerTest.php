@@ -22,22 +22,24 @@ class OpenCartExtensionInstallerTest extends \PHPUnit_Framework_TestCase
             $this->getMockBuilder('Composer\IO\IOInterface')->getMock() ,
             $composer
         );
-
-        mkdir('tests/tocopy');
     }
 
-    public function tearDown()
+    public function testFileCopying()
     {
+        mkdir('tests/tocopy');
+
+        $this->openCartExtensionInstaller->copyFiles('tests/resources','tests/tocopy', ['mappings' => ['sampledir/samplefile.txt']]);
+        $this->assertTrue(is_file('tests/tocopy/sampledir/samplefile.txt'));
+
         unlink('tests/tocopy/sampledir/samplefile.txt');
         rmdir('tests/tocopy/sampledir');
         rmdir('tests/tocopy');
     }
 
-    public function testFileCopying()
+    public function testSrcDir()
     {
-        $this->openCartExtensionInstaller->copyFiles('tests/resources','tests/tocopy', ['mappings' => ['sampledir/samplefile.txt']]);
-
-        $this->assertTrue(is_file('tests/tocopy/sampledir/samplefile.txt'));
+        $srcDir = $this->openCartExtensionInstaller->getSrcDir('vendor/vendor-name/project', ['src-dir' => 'src/main/upload']);
+        $this->assertEquals('vendor/vendor-name/project/src/main/upload', $srcDir);
     }
 
 }

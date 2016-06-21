@@ -11,10 +11,10 @@ class OpenCartExtensionInstaller extends LibraryInstaller
 {
     public function getOpenCartDir()
     {
-        $extras = $this->composer->getPackage()->getExtra();
+        $extra = $this->composer->getPackage()->getExtra();
 
-        if (isset($extras['opencart-dir'])) {
-            return $extras['opencart-dir'];
+        if (isset($extra['opencart-dir'])) {
+            return $extra['opencart-dir'];
         }
 
         // OC 2.2.0.0 directory "upload" is root dir
@@ -24,10 +24,10 @@ class OpenCartExtensionInstaller extends LibraryInstaller
     /**
      * Get src path of module
      */
-    public function getSrcDir($installPath, array $extras)
+    public function getSrcDir($installPath, array $extra)
     {
-        if (isset($extras['src-dir'])) {
-            $installPath .= "/" . $extras['src-dir'];
+        if (isset($extra['src-dir']) && is_string($extra['src-dir'])) {
+            $installPath .= "/" . $extra['src-dir'];
         } else { // default
             $installPath .= "/src/upload";
         }
@@ -36,14 +36,14 @@ class OpenCartExtensionInstaller extends LibraryInstaller
     }
 
     /**
-     * @param array $extras extras array
+     * @param array $extra extra array
      */
-    public function copyFiles($sourceDir, $targetDir, array $extras)
+    public function copyFiles($sourceDir, $targetDir, array $extra)
     {
         $filesystem = new Filesystem();
 
-        if (isset($extras['mappings']) && is_array($extras['mappings'])) {
-            foreach($extras['mappings'] as $mapping) {
+        if (isset($extra['mappings']) && is_array($extra['mappings'])) {
+            foreach($extra['mappings'] as $mapping) {
                 $source = $sourceDir . "/" . $mapping;
                 $target = $targetDir . "/" . $mapping;
                 $filesystem->copy($source, $target, true);
