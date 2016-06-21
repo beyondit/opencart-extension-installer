@@ -1,6 +1,6 @@
 {
     "name": "beyondit/opencart-extension-installer",
-    "description": "Customer Composer Installer for installing OpenCart Extensions",
+    "description": "Custom Composer Installer for installing OpenCart Extensions",
     "type": "composer-plugin",
     "require": {
         "composer-plugin-api": "^1.0"
