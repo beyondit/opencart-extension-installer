@@ -32,7 +32,7 @@ class OpenCartExtensionInstaller extends LibraryInstaller
             $installPath .= "/src/upload";
         }
 
-        return;
+        return $installPath;
     }
 
     /**

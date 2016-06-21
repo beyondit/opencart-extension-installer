@@ -11,11 +11,11 @@
 
 ### Example
 
-    ```json
+```json
     {
         "name": "vendor/project-name",
         "type": "opencart-extension",
-        "extras": {
+        "extra": {
             "src-dir" : "src/upload",
             "mappings" : {
                 "catalog/controller/vendor/controller_name.php",
@@ -23,7 +23,7 @@
             }       
         }
     }
-    ```
+```
 
 ## Composer Root Project Extras
 
