@@ -1,0 +1,25 @@
+{
+    "name": "beyondit/opencart-extension-installer",
+    "description": "Customer Composer Installer for installing OpenCart Extensions",
+    "type": "composer-plugin",
+    "require": {
+        "composer-plugin-api": "^1.0"
+    },
+    "license": "GPL 3.0",
+    "authors": [
+        {
+            "name": "Stefan Huber",
+            "email": "stefan.huber@beyondit.at"
+        }
+    ],
+    "autoload": {
+        "psr-4": { "BeyondIT\\Composer\\": "src/BeyondIT/Composer" }
+    },
+    "extra": {
+        "class": "BeyondIT\\Composer\\OpenCartExtensionInstallerPlugin"
+    },
+    "require-dev": {
+        "composer/composer": "^1.1" ,
+        "phpunit/phpunit": "~4"
+    }
+}
