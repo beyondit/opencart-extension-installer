@@ -53,15 +53,20 @@ class OpenCartExtensionInstaller extends LibraryInstaller
     }
 
     /**
+     * @param string $installPath
      * @param array $extra extra array
      */
-    public function runExtensionInstaller(array $extra)
+    public function runExtensionInstaller(PackageInterface $package)
     {
+        $extra = $package->getExtra();
+        $installPath = $this->getInstallPath($package);
+        $name = $package->getName();
+
         if (isset($extra['installers']) && is_array($extra['installers'])) {
             if (isset($extra['installers']['php'])) {
-                $this->runPhpExtensionInstaller($extra['installers']['php']);
+                $this->runPhpExtensionInstaller($installPath . "/" . $extra['installers']['php']);
             } elseif (isset($extra['installers']['xml'])) {
-
+                $this->runXmlExtensionInstaller($name, $installPath . "/" . $extra['installers']['xml']);
             }
         }
     }
@@ -89,8 +94,10 @@ class OpenCartExtensionInstaller extends LibraryInstaller
         $installer->install($file);
     }
 
-    public function runXmlExtensionInstaller($file) {
-        $dir = $this->getOpenCartDir();
+    public function runXmlExtensionInstaller($name, $src) {
+        $filesystem = new Filesystem();
+        $target = $this->getOpenCartDir() . "/system/storage/" . strtolower(str_replace("/","_",$name)) . ".ocmod.xml";
+        $filesystem->copy($src, $target, true);
     }
 
     /**
@@ -104,6 +111,7 @@ class OpenCartExtensionInstaller extends LibraryInstaller
         $openCartDir = $this->getOpenCartDir();
 
         $this->copyFiles($srcDir, $openCartDir, $package->getExtra());
+        $this->runExtensionInstaller($package);
     }
 
     /**
