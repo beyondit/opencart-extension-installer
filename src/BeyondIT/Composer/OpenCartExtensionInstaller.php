@@ -65,7 +65,8 @@ class OpenCartExtensionInstaller extends LibraryInstaller
         if (isset($extra['installers']) && is_array($extra['installers'])) {
             if (isset($extra['installers']['php'])) {
                 $this->runPhpExtensionInstaller($installPath . "/" . $extra['installers']['php']);
-            } elseif (isset($extra['installers']['xml'])) {
+            }
+            if (isset($extra['installers']['xml'])) {
                 $this->runXmlExtensionInstaller($name, $installPath . "/" . $extra['installers']['xml']);
             }
         }
