@@ -6,6 +6,7 @@ use Composer\Installer\LibraryInstaller;
 use Composer\Package\PackageInterface;
 use Composer\Repository\InstalledRepositoryInterface;
 use Symfony\Component\Filesystem\Filesystem;
+use BeyondIT\Composer\OpenCartNaivePhpInstaller;
 
 class OpenCartExtensionInstaller extends LibraryInstaller
 {
@@ -49,6 +50,47 @@ class OpenCartExtensionInstaller extends LibraryInstaller
                 $filesystem->copy($source, $target, true);
             }
         }
+    }
+
+    /**
+     * @param array $extra extra array
+     */
+    public function runExtensionInstaller(array $extra)
+    {
+        if (isset($extra['installers']) && is_array($extra['installers'])) {
+            if (isset($extra['installers']['php'])) {
+                $this->runPhpExtensionInstaller($extra['installers']['php']);
+            } elseif (isset($extra['installers']['xml'])) {
+
+            }
+        }
+    }
+
+    public function runPhpExtensionInstaller($file) {
+        $dir = $this->getOpenCartDir();
+
+        chdir("./".$dir);
+
+        $_SERVER['SERVER_PORT'] = 80;
+        $_SERVER['SERVER_PROTOCOL'] = 'CLI';
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+
+        ob_start();
+        include('admin/index.php');
+        ob_end_clean();
+
+        chdir('.');
+
+        // $registry comes from admin/index.php
+        OpenCartNaivePhpInstaller::$registry = $registry;
+
+        $installer = new OpenCartNaivePhpInstaller();
+        $installer->install($file);
+    }
+
+    public function runXmlExtensionInstaller($file) {
+        $dir = $this->getOpenCartDir();
     }
 
     /**
