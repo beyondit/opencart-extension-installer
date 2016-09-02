@@ -56,18 +56,17 @@ class OpenCartExtensionInstaller extends LibraryInstaller
      * @param string $installPath
      * @param array $extra extra array
      */
-    public function runExtensionInstaller(PackageInterface $package)
+    public function runExtensionInstaller()
     {
-        $extra = $package->getExtra();
-        $installPath = $this->getInstallPath($package);
-        $name = $package->getName();
+        $extra = $this->composer->getPackage()->getExtra();
+        $installPath = $this->getInstallPath($this->composer->getPackage());
 
         if (isset($extra['installers']) && is_array($extra['installers'])) {
             if (isset($extra['installers']['php'])) {
                 $this->runPhpExtensionInstaller($installPath . "/" . $extra['installers']['php']);
             }
             if (isset($extra['installers']['xml'])) {
-                $this->runXmlExtensionInstaller($name, $installPath . "/" . $extra['installers']['xml']);
+                $this->runXmlExtensionInstaller($installPath . "/" . $extra['installers']['xml']);
             }
         }
     }
@@ -96,8 +95,9 @@ class OpenCartExtensionInstaller extends LibraryInstaller
     }
 
     public function runXmlExtensionInstaller($name, $src) {
+        $name = strtolower(str_replace( "/","_",$this->composer->getPackage()->getName() ));
         $filesystem = new Filesystem();
-        $target = $this->getOpenCartDir() . "/system/storage/" . strtolower(str_replace("/","_",$name)) . ".ocmod.xml";
+        $target = $this->getOpenCartDir() . "/system/" . $name . ".ocmod.xml";
         $filesystem->copy($src, $target, true);
     }
 
@@ -112,7 +112,7 @@ class OpenCartExtensionInstaller extends LibraryInstaller
         $openCartDir = $this->getOpenCartDir();
 
         $this->copyFiles($srcDir, $openCartDir, $package->getExtra());
-        $this->runExtensionInstaller($package);
+        $this->runExtensionInstaller();
     }
 
     /**
@@ -122,7 +122,11 @@ class OpenCartExtensionInstaller extends LibraryInstaller
     {
         parent::update($repo, $initial, $target);
 
-        // TODO: update files from opencart
+        $srcDir = $this->getSrcDir($this->getInstallPath($target), $target->getExtra());
+        $openCartDir = $this->getOpenCartDir();
+
+        $this->copyFiles($srcDir, $openCartDir, $target->getExtra());
+        $this->runExtensionInstaller();
     }
 
     /**
