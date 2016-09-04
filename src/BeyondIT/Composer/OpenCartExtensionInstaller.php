@@ -59,33 +59,40 @@ class OpenCartExtensionInstaller extends LibraryInstaller
      */
     public function runExtensionInstaller($srcDir, $name, array $extra)
     {
-        if (isset($extra['installers']) && is_array($extra['installers'])) {
-            if (isset($extra['installers']['xml'])) {
-                try {
-                    $this->runXmlExtensionInstaller($srcDir ."/". $extra['installers']['xml'], $name);
-                    $this->io->write("    <info>Successfully runned xml installer.</info>");
-                } catch (\Exception $e) {
-                    $this->io->write("    <error>Error while running xml extension installer.</error>");
-                }
+        $xml = (isset($extra['installers']) && isset($extra['installers']['xml'])) ? $extra['installers']['xml'] : '';
+        $php = (isset($extra['installers']) && isset($extra['installers']['php'])) ? $extra['installers']['php'] : '';
+
+        if (!empty($php)) {
+            $this->io->write("    <info>Start running php installer.</info>");
+            try {
+                $this->runPhpExtensionInstaller($srcDir ."/". $php);
+                $this->io->write("    <info>Successfully runned php installer.</info>");
+            } catch (\Exception $e) {
+                $this->io->write("    <error>Error while running php extension installer.</error>");
             }
-            if (isset($extra['installers']['php'])) {
-                try {
-                    $this->runPhpExtensionInstaller($srcDir ."/". $extra['installers']['php']);
-                    $this->io->write("    <info>Successfully runned php installer.</info>");
-                } catch (\Exception $e) {
-                    $this->io->write("    <error>Error while running php extension installer.</error>");
-                }
+        }
+
+        if (!empty($xml)) {
+            $this->io->write("    <info>Start running xml installer.</info>");
+            try {
+                $this->runXmlExtensionInstaller($srcDir ."/". $xml, $name);
+                $this->io->write("    <info>Successfully runned xml installer.</info>");
+            } catch (\Exception $e) {
+                $this->io->write("    <error>Error while running xml extension installer.</error>");
             }
         }
     }
 
     public function runPhpExtensionInstaller($file) {
-        $openCartAdmin = $this->getOpenCartDir() . "/admin/index.php";
+        $openCartDir = $this->getOpenCartDir();
 
         // opencart not yet available
-        if (!is_file($openCartAdmin)) {
+        if (!is_dir($openCartDir)) {
             return;
         }
+
+        $tmpDir = getcwd();
+        chdir($openCartDir);
 
         $_SERVER['SERVER_PORT'] = 80;
         $_SERVER['SERVER_PROTOCOL'] = 'CLI';
@@ -93,8 +100,10 @@ class OpenCartExtensionInstaller extends LibraryInstaller
         $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 
         ob_start();
-        include($openCartAdmin);
+        include("admin/index.php");
         ob_end_clean();
+
+        chdir($tmpDir);
 
         // $registry comes from admin/index.php
         OpenCartNaivePhpInstaller::$registry = $registry;
