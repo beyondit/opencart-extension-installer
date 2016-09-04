@@ -60,11 +60,21 @@ class OpenCartExtensionInstaller extends LibraryInstaller
     public function runExtensionInstaller($srcDir, $name, array $extra)
     {
         if (isset($extra['installers']) && is_array($extra['installers'])) {
-            if (isset($extra['installers']['php'])) {
-                $this->runPhpExtensionInstaller($srcDir ."/". $extra['installers']['php']);
-            }
             if (isset($extra['installers']['xml'])) {
-                $this->runXmlExtensionInstaller($srcDir ."/". $extra['installers']['xml'], $name);
+                try {
+                    $this->runXmlExtensionInstaller($srcDir ."/". $extra['installers']['xml'], $name);
+                    $this->io->write("    <info>Successfully runned xml installer.</info>");
+                } catch (\Exception $e) {
+                    $this->io->write("    <error>Error while running xml extension installer.</error>");
+                }
+            }
+            if (isset($extra['installers']['php'])) {
+                try {
+                    $this->runPhpExtensionInstaller($srcDir ."/". $extra['installers']['php']);
+                    $this->io->write("    <info>Successfully runned php installer.</info>");
+                } catch (\Exception $e) {
+                    $this->io->write("    <error>Error while running php extension installer.</error>");
+                }
             }
         }
     }
