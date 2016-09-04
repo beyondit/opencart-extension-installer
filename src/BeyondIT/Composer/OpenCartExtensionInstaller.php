@@ -53,28 +53,29 @@ class OpenCartExtensionInstaller extends LibraryInstaller
     }
 
     /**
-     * @param string $installPath
+     * @param string $srcDir Src Directory of installed package
+     * @param string $name Name of installed package
      * @param array $extra extra array
      */
-    public function runExtensionInstaller()
+    public function runExtensionInstaller($srcDir, $name, array $extra)
     {
-        $extra = $this->composer->getPackage()->getExtra();
-        $installPath = $this->getInstallPath($this->composer->getPackage());
-
         if (isset($extra['installers']) && is_array($extra['installers'])) {
             if (isset($extra['installers']['php'])) {
-                $this->runPhpExtensionInstaller($installPath . "/" . $extra['installers']['php']);
+                $this->runPhpExtensionInstaller($srcDir ."/". $extra['installers']['php']);
             }
             if (isset($extra['installers']['xml'])) {
-                $this->runXmlExtensionInstaller($installPath . "/" . $extra['installers']['xml']);
+                $this->runXmlExtensionInstaller($srcDir ."/". $extra['installers']['xml'], $name);
             }
         }
     }
 
     public function runPhpExtensionInstaller($file) {
-        $dir = $this->getOpenCartDir();
+        $openCartAdmin = $this->getOpenCartDir() . "/admin/index.php";
 
-        chdir("./".$dir);
+        // opencart not yet available
+        if (!is_file($openCartAdmin)) {
+            return;
+        }
 
         $_SERVER['SERVER_PORT'] = 80;
         $_SERVER['SERVER_PROTOCOL'] = 'CLI';
@@ -82,10 +83,8 @@ class OpenCartExtensionInstaller extends LibraryInstaller
         $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 
         ob_start();
-        include('admin/index.php');
+        include($openCartAdmin);
         ob_end_clean();
-
-        chdir('.');
 
         // $registry comes from admin/index.php
         OpenCartNaivePhpInstaller::$registry = $registry;
@@ -94,10 +93,11 @@ class OpenCartExtensionInstaller extends LibraryInstaller
         $installer->install($file);
     }
 
-    public function runXmlExtensionInstaller($name, $src) {
-        $name = strtolower(str_replace( "/","_",$this->composer->getPackage()->getName() ));
+    public function runXmlExtensionInstaller($src, $name) {
+        $name = strtolower(str_replace(array("/","-"),"_",$name));
         $filesystem = new Filesystem();
         $target = $this->getOpenCartDir() . "/system/" . $name . ".ocmod.xml";
+
         $filesystem->copy($src, $target, true);
     }
 
@@ -112,7 +112,7 @@ class OpenCartExtensionInstaller extends LibraryInstaller
         $openCartDir = $this->getOpenCartDir();
 
         $this->copyFiles($srcDir, $openCartDir, $package->getExtra());
-        $this->runExtensionInstaller();
+        $this->runExtensionInstaller($this->getInstallPath($package), $package->getName(), $package->getExtra());
     }
 
     /**
@@ -126,7 +126,7 @@ class OpenCartExtensionInstaller extends LibraryInstaller
         $openCartDir = $this->getOpenCartDir();
 
         $this->copyFiles($srcDir, $openCartDir, $target->getExtra());
-        $this->runExtensionInstaller();
+        $this->runExtensionInstaller($this->getInstallPath($target), $target->getName(), $target->getExtra());
     }
 
     /**

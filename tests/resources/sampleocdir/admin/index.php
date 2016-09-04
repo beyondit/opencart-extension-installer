@@ -1,0 +1,3 @@
+<?php
+
+$registry = new stdClass();
