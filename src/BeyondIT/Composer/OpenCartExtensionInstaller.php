@@ -84,6 +84,7 @@ class OpenCartExtensionInstaller extends LibraryInstaller
     }
 
     public function runPhpExtensionInstaller($file) {
+        $registry = null;
         $openCartDir = $this->getOpenCartDir();
 
         // opencart not yet available

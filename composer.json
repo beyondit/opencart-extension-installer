@@ -3,7 +3,8 @@
     "description": "Custom Composer Installer for installing OpenCart Extensions",
     "type": "composer-plugin",
     "require": {
-        "composer-plugin-api": "^1.0"
+        "composer-plugin-api": "^1.0",
+        "opencart/opencart": ">=2.2 <2.3"
     },
     "license": "GPL 3.0",
     "authors": [
