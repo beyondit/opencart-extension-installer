@@ -18,7 +18,7 @@ class OpenCartExtensionInstaller extends LibraryInstaller
             return $extra['opencart-dir'];
         }
 
-        // OC 2.2.0.0 directory "upload" is root dir
+        // OC directory "upload" is root dir
         return 'upload';
     }
 
@@ -85,7 +85,7 @@ class OpenCartExtensionInstaller extends LibraryInstaller
 
     public function runPhpExtensionInstaller($file) {
         $registry = null;
-        $openCartDir = $this->getOpenCartDir();
+        $openCartDir = $this->getOpenCartDir();       
 
         // opencart not yet available
         if (!is_dir($openCartDir)) {
@@ -95,22 +95,28 @@ class OpenCartExtensionInstaller extends LibraryInstaller
         $tmpDir = getcwd();
         chdir($openCartDir);
 
-        $_SERVER['SERVER_PORT'] = 80;
-        $_SERVER['SERVER_PROTOCOL'] = 'CLI';
-        $_SERVER['REQUEST_METHOD'] = 'GET';
-        $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+        // only trigger install iff config is available
+        if (is_file('admin/config.php')) {
+            $_SERVER['SERVER_PORT'] = 80;
+            $_SERVER['SERVER_PROTOCOL'] = 'CLI';
+            $_SERVER['REQUEST_METHOD'] = 'GET';
+            $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 
-        ob_start();
-        include("admin/index.php");
-        ob_end_clean();
+            ob_start();
+            require_once('admin/config.php');
+            $application_config = "admin";
+            include('system/startup.php');
+            include('system/framework.php');
+            ob_end_clean();
 
-        chdir($tmpDir);
+            chdir($tmpDir);
 
-        // $registry comes from admin/index.php
-        OpenCartNaivePhpInstaller::$registry = $registry;
+            // $registry comes from system/framework.php
+            OpenCartNaivePhpInstaller::$registry = $registry;
 
-        $installer = new OpenCartNaivePhpInstaller();
-        $installer->install($file);
+            $installer = new OpenCartNaivePhpInstaller();
+            $installer->install($file);            
+        }        
     }
 
     public function runXmlExtensionInstaller($src, $name) {
