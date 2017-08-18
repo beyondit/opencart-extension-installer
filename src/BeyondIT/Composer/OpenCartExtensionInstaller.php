@@ -68,7 +68,7 @@ class OpenCartExtensionInstaller extends LibraryInstaller
                 $this->runPhpExtensionInstaller($srcDir ."/". $php);
                 $this->io->write("    <info>Successfully runned php installer.</info>");
             } catch (\Exception $e) {
-                $this->io->write("    <error>Error while running php extension installer.</error>");
+                $this->io->write("    <error>Error while running php extension installer. " . $e->getMessage() . "</error>");
             }
         }
 
@@ -78,7 +78,7 @@ class OpenCartExtensionInstaller extends LibraryInstaller
                 $this->runXmlExtensionInstaller($srcDir ."/". $xml, $name);
                 $this->io->write("    <info>Successfully runned xml installer.</info>");
             } catch (\Exception $e) {
-                $this->io->write("    <error>Error while running xml extension installer.</error>");
+                $this->io->write("    <error>Error while running xml extension installer. " . $e->getMessage() . "</error>");
             }
         }
     }
