@@ -7,15 +7,16 @@ use Composer\Composer;
 use Composer\Config;
 use Composer\Package\Package;
 use Composer\Package\RootPackage;
+use PHPUnit\Framework\TestCase;
 
-class OpenCartExtensionInstallerTest extends \PHPUnit_Framework_TestCase
+class OpenCartExtensionInstallerTest extends TestCase
 {
     /**
      * @var OpenCartExtensionInstaller
      */
     protected $openCartExtensionInstaller;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $composer = new Composer();
         $package = new RootPackage("test","1","1");
